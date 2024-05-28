@@ -1,4 +1,4 @@
-package com.gft.compose
+package com.gft.compose.data
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
