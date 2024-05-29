@@ -3,14 +3,12 @@ package com.gft.compose.interaction
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.State
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.onPreInterceptKeyBeforeSoftKeyboard
 import androidx.compose.ui.input.pointer.PointerEventPass
-import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 
@@ -19,47 +17,49 @@ fun InteractionFilter(
     interactionEnabled: Boolean,
     content: @Composable () -> Unit,
 ) {
-    val interactionEnabledState = rememberUpdatedState(interactionEnabled)
-    InteractionFilter(
-        interactionEnabled = interactionEnabledState,
+    val interactionEnabledState = rememberUpdatedState(newValue = interactionEnabled)
+    FilterInputEvents(
+        interactionEnabled = { interactionEnabledState.value },
         content = content
+    )
+    UpdateKeyboardVisibility(
+        interactionEnabled = interactionEnabled
     )
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun InteractionFilter(
-    interactionEnabled: State<Boolean>,
+private fun FilterInputEvents(
+    interactionEnabled: () -> Boolean,
     content: @Composable () -> Unit,
 ) {
     Box(
         modifier = Modifier
-            .pointerInput(interactionEnabled.value) {
-                if (!interactionEnabled.value) {
-                    awaitEachGesture {
-                        awaitPointerEvent(pass = PointerEventPass.Initial)
-                            .changes
-                            .forEach(PointerInputChange::consume)
-                    }
+            .pointerInput(Unit) {
+                awaitEachGesture {
+                    awaitPointerEvent(pass = PointerEventPass.Initial)
+                        .changes
+                        .forEach { change ->
+                            if (!interactionEnabled()) {
+                                change.consume()
+                            }
+                        }
                 }
             }
-            .onPreInterceptKeyBeforeSoftKeyboard { !interactionEnabled.value }
+            .onPreInterceptKeyBeforeSoftKeyboard { !interactionEnabled() }
     ) {
         content()
     }
-    KeyboardVisibilityController(interactionEnabled)
 }
 
 @Composable
-private fun KeyboardVisibilityController(
-    interactionEnabled: State<Boolean>,
+fun UpdateKeyboardVisibility(
+    interactionEnabled: Boolean,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    DisposableEffect(interactionEnabled.value) {
-        if (!interactionEnabled.value) {
+    SideEffect {
+        if (!interactionEnabled) {
             keyboardController?.hide()
         }
-        onDispose { }
     }
 }
-
