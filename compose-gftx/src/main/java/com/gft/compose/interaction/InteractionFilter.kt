@@ -4,7 +4,7 @@ import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -25,11 +25,11 @@ fun InteractionFilter(
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val currentMinActiveState = rememberUpdatedState(newValue = minActiveState)
-    val interactionEnabled = remember(minActiveState) { mutableStateOf(lifecycleOwner.isStateAtLeast(minActiveState)) }
+    val interactionEnabled = rememberUpdatedState(newValue = lifecycleOwner.isStateAtLeast(minActiveState))
 
     DisposableEffect(lifecycleOwner) {
         val lifecycleObserver = LifecycleEventObserver { _, _ ->
-            interactionEnabled.value = lifecycleOwner.isStateAtLeast(currentMinActiveState.value)
+            (interactionEnabled as MutableState).value = lifecycleOwner.isStateAtLeast(currentMinActiveState.value)
         }
         lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
         onDispose {
