@@ -39,3 +39,10 @@ This library is usually required by other GFT libraries.
     onBack: () -> Unit,
   )
   ```
+- **DisableTextToolbar**
+  ```kotlin
+  @Composable
+  fun DisableTextToolbar(
+    content: @Composable () -> Unit,
+  )
+  ```
