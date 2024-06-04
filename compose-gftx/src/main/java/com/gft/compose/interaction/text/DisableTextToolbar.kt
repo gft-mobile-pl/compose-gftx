@@ -2,11 +2,13 @@ package com.gft.compose.interaction.text
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.platform.LocalTextToolbar
 import androidx.compose.ui.platform.TextToolbar
 import androidx.compose.ui.platform.TextToolbarStatus
 
+@Stable
 private class AlwaysHiddenTextToolbar : TextToolbar {
     override val status = TextToolbarStatus.Hidden
 
