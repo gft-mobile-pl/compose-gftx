@@ -1,5 +1,8 @@
 import com.vanniktech.maven.publish.AndroidMultiVariantLibrary
 import com.vanniktech.maven.publish.SonatypeHost
+import groovy.namespace.QName
+import groovy.util.Node
+import groovy.util.NodeList
 
 plugins {
     alias(libs.plugins.android.library)
@@ -71,6 +74,21 @@ mavenPublishing {
             connection.set("scm:git:git://${project.property("libraryRepositoryUrl") as String}")
             developerConnection.set("scm:git:ssh://git@${project.property("libraryRepositoryUrl") as String}.git")
         }
+
+        withXml {
+            fun Node.child(name: String) =
+                children().first { it is Node && (it.name() as QName).localPart == name } as Node
+
+            val dependencyVersions = configurations["releaseRuntimeClasspath"].resolvedConfiguration.resolvedArtifacts.associate { it.moduleVersion.id.name to it.moduleVersion.id.version }
+            asNode().child("dependencies").children().filterIsInstance<Node>().forEach { dependencyNode ->
+                val isVersionMissing = (dependencyNode["version"] as NodeList).isEmpty()
+                if (isVersionMissing) {
+                    val artifactId = ((dependencyNode["artifactId"] as NodeList).first() as Node).text()
+                    val version = dependencyVersions["$artifactId-android"]
+                    dependencyNode.appendNode("version", version)
+                }
+            }
+        }
         publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
         signAllPublications()
     }
@@ -80,7 +98,6 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
 
     implementation(libs.androidx.ui)
