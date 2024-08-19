@@ -3,8 +3,18 @@
 A set of @Composable methods that accelerate working with Compose.<br />
 This library is usually required by other GFT libraries.
 
+## Common
+- **Modifier.modifyIf**
+  ```kotlin
+  @Composable
+  inline fun Modifier.modifyIf(
+    condition: Boolean,
+    crossinline transformation: @Composable Modifier.() -> Modifier,
+  ): Modifier
+  ``` 
+
 ## Data
-- **toState**
+- **StateFlow\<T\>.toState**
   ```kotlin
   @Composable
   fun <T> StateFlow<T>.toState(
@@ -45,4 +55,8 @@ This library is usually required by other GFT libraries.
   fun DisableTextToolbar(
     content: @Composable () -> Unit,
   )
+  ```
+- **Modifier.clearFocusOnClick**
+  ```kotlin
+  fun Modifier.clearFocusOnClick(): Modifier
   ```
