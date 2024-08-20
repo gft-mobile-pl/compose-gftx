@@ -1,4 +1,4 @@
-import com.vanniktech.maven.publish.AndroidMultiVariantLibrary
+import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 import com.vanniktech.maven.publish.SonatypeHost
 import groovy.namespace.QName
 import groovy.util.Node
@@ -44,7 +44,7 @@ android {
 
 mavenPublishing {
     configure(
-        AndroidMultiVariantLibrary(
+        AndroidSingleVariantLibrary(
             sourcesJar = true,
             publishJavadocJar = true,
         )
