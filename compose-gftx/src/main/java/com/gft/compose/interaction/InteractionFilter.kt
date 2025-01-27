@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.input.key.onPreInterceptKeyBeforeSoftKeyboard
 import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
@@ -75,13 +76,17 @@ private fun InteractionFilter(
             }
             .pointerInput(inputEnabled) {
                 awaitEachGesture {
-                    awaitPointerEvent(pass = PointerEventPass.Initial)
-                        .changes
-                        .forEach { change ->
-                            if (!inputEnabled()) {
-                                change.consume()
+                    var isAnyPointerPressed: Boolean
+                    do {
+                        isAnyPointerPressed = awaitPointerEvent(pass = PointerEventPass.Initial)
+                            .changes
+                            .onEach { change ->
+                                if (!inputEnabled()) {
+                                    change.consume()
+                                }
                             }
-                        }
+                            .any(PointerInputChange::pressed)
+                    } while (isAnyPointerPressed)
                 }
             }
             .onPreInterceptKeyBeforeSoftKeyboard { !inputEnabled() }
