@@ -2,6 +2,7 @@ package com.gft.compose.interaction
 
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
@@ -22,7 +23,7 @@ import androidx.lifecycle.LifecycleOwner
 @Composable
 fun InteractionFilter(
     minActiveState: Lifecycle.State,
-    content: @Composable () -> Unit,
+    content: @Composable BoxScope.() -> Unit,
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val currentMinActiveState = rememberUpdatedState(newValue = minActiveState)
@@ -52,7 +53,7 @@ private fun LifecycleOwner.isStateAtLeast(state: Lifecycle.State) = lifecycle.cu
 @Composable
 fun InteractionFilter(
     interactionEnabled: Boolean,
-    content: @Composable () -> Unit,
+    content: @Composable BoxScope.() -> Unit,
 ) {
     val interactionEnabledState = rememberUpdatedState(interactionEnabled)
     InteractionFilter(
@@ -62,35 +63,50 @@ fun InteractionFilter(
     )
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun InteractionFilter(
     inputEnabled: () -> Boolean,
     focusEnabled: Boolean,
-    content: @Composable () -> Unit,
+    content: @Composable BoxScope.() -> Unit,
 ) {
     Box(
-        modifier = Modifier
-            .focusProperties {
-                canFocus = focusEnabled
-            }
-            .pointerInput(inputEnabled) {
-                awaitEachGesture {
-                    var isAnyPointerPressed: Boolean
-                    do {
-                        isAnyPointerPressed = awaitPointerEvent(pass = PointerEventPass.Initial)
-                            .changes
-                            .onEach { change ->
-                                if (!inputEnabled()) {
-                                    change.consume()
-                                }
-                            }
-                            .any(PointerInputChange::pressed)
-                    } while (isAnyPointerPressed)
-                }
-            }
-            .onPreInterceptKeyBeforeSoftKeyboard { !inputEnabled() }
-    ) {
-        content()
-    }
+        modifier = Modifier.interactionFilter(inputEnabled, focusEnabled),
+        content = content
+    )
 }
+
+@Composable
+fun Modifier.interactionFilter(
+    interactionEnabled: Boolean
+): Modifier {
+    val interactionEnabledState = rememberUpdatedState(interactionEnabled)
+    return this then Modifier.interactionFilter(
+        inputEnabled = { interactionEnabledState.value },
+        focusEnabled = interactionEnabled
+    )
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+private fun Modifier.interactionFilter(
+    inputEnabled: () -> Boolean,
+    focusEnabled: Boolean,
+) = this then Modifier
+    .focusProperties {
+        canFocus = focusEnabled
+    }
+    .pointerInput(inputEnabled) {
+        awaitEachGesture {
+            var isAnyPointerPressed: Boolean
+            do {
+                isAnyPointerPressed = awaitPointerEvent(pass = PointerEventPass.Initial)
+                    .changes
+                    .onEach { change ->
+                        if (!inputEnabled()) {
+                            change.consume()
+                        }
+                    }
+                    .any(PointerInputChange::pressed)
+            } while (isAnyPointerPressed)
+        }
+    }
+    .onPreInterceptKeyBeforeSoftKeyboard { !inputEnabled() }
