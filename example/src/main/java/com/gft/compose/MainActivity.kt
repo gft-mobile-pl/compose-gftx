@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
+import com.gft.compose.ui.interactionfilter.InteractionFilterTestScreen
 import com.gft.compose.ui.interactionfilter.LifecycleAwareBackHandlerTestScreen
 import com.gft.compose.ui.modifiers.ClearFocusOnClickTestScreen
 
@@ -14,7 +15,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MaterialTheme {
-                ClearFocusOnClickTestScreen()
+                InteractionFilterTestScreen()
             }
         }
     }

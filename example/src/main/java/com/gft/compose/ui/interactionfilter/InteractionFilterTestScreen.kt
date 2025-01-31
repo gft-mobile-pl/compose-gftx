@@ -31,6 +31,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.gft.compose.interaction.InteractionFilter
+import com.gft.compose.interaction.interactionFilter
 import com.gft.compose.ui.common.CenteredColumn
 import com.gft.compose.ui.common.LargeText
 import com.gft.compose.ui.common.Screen
@@ -88,13 +89,51 @@ fun InteractionFilterTestScreen() {
                             }
                         }
 
-                        Spacer(Modifier.height(32.dp))
+                        Spacer(Modifier.height(16.dp))
                         Button(onClick = {
                             navController.navigate(ScreenBDestination)
                         }) {
                             Text(text = "Go to next screen")
                         }
                     }
+                }
+
+                CenteredColumn(
+                    modifier = Modifier.interactionFilter(interactionEnabled.value)
+                ) {
+                    Card(
+                        modifier = Modifier.padding(12.dp)
+                    ) {
+                        val counter = remember { mutableIntStateOf(0) }
+                        val editTextValue = remember { mutableStateOf("") }
+                        CenteredColumn {
+                            LargeText("Counter: ${counter.intValue}")
+                            Button(onClick = {
+                                counter.intValue++
+                            }) {
+                                Text(text = "Increase counter")
+                            }
+                            OutlinedTextField(value = editTextValue.value, onValueChange = { text ->
+                                editTextValue.value = text
+                            })
+                        }
+                    }
+
+                    Spacer(Modifier.height(16.dp))
+                    Button(onClick = {
+                        navController.navigate(ScreenBDestination)
+                    }) {
+                        Text(text = "Go to next screen")
+                    }
+                }
+
+                Spacer(Modifier.height(16.dp))
+                Button(
+                    modifier = Modifier.interactionFilter(interactionEnabled.value),
+                    onClick = {
+                        navController.navigate(ScreenBDestination)
+                    }) {
+                    Text(text = "Go to next screen")
                 }
             }
         }
