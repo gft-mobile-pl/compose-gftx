@@ -15,10 +15,10 @@ import androidx.compose.ui.input.key.onPreInterceptKeyBeforeSoftKeyboard
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 
 @Composable
 fun InteractionFilter(
@@ -77,7 +77,7 @@ private fun InteractionFilter(
 
 @Composable
 fun Modifier.interactionFilter(
-    interactionEnabled: Boolean
+    interactionEnabled: Boolean,
 ): Modifier {
     val interactionEnabledState = rememberUpdatedState(interactionEnabled)
     return this then Modifier.interactionFilter(

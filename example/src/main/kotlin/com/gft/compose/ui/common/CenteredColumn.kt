@@ -16,10 +16,11 @@ inline fun CenteredColumn(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Column(
-        modifier = modifier.padding(12.dp).fillMaxWidth(),
+        modifier = modifier
+            .padding(12.dp)
+            .fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         content = content
     )
 }
-
