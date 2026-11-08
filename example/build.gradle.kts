@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.gft.compose.example"
-    compileSdk = 35
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.gft.compose"
