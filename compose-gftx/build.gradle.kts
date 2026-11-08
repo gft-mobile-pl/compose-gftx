@@ -1,5 +1,4 @@
 import com.vanniktech.maven.publish.SonatypeHost
-import groovy.namespace.QName
 import groovy.util.Node
 import groovy.util.NodeList
 
@@ -7,21 +6,28 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.maven.publish)
     alias(libs.plugins.compose)
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
+    alias(libs.plugins.compose.compiler)
 }
 
 kotlin {
     jvm {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = Java.jvmTarget
-            }
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
         }
     }
-    androidTarget{
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = Java.jvmTarget
+    android {
+        namespace = "com.gft.compose"
+        compileSdk = 35
+        minSdk = 26
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        }
+        androidResources { enable = true }
+        optimization {
+            consumerKeepRules.apply {
+                publish = true
+                file("consumer-rules.pro")
             }
         }
     }
@@ -32,8 +38,8 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(compose.ui)
-                implementation(compose.foundation)
+                implementation(libs.compose.ui)
+                implementation(libs.compose.foundation)
                 implementation(libs.androidx.lifecycle.runtime.compose)
 
             }
@@ -44,24 +50,6 @@ kotlin {
             }
         }
     }
-}
-
-android {
-    namespace = "com.gft.compose"
-    compileSdk = 34
-
-    defaultConfig {
-        minSdk = 26
-
-        compileOptions {
-            sourceCompatibility = Java.sourceCompatibility
-            targetCompatibility = Java.targetCompatibility
-        }
-    }
-}
-
-compose {
-    kotlinCompilerPlugin.set(Compose.kotlinCompilerPlugin)
 }
 
 mavenPublishing {
@@ -92,9 +80,9 @@ mavenPublishing {
 
         withXml {
             fun Node.child(name: String) =
-                children().first { it is Node && (it.name() as QName).localPart == name } as Node
+                children().first { it is Node && it.name().toString().substringAfterLast('}') == name } as Node
 
-            val dependencyVersions = configurations["releaseRuntimeClasspath"].resolvedConfiguration.resolvedArtifacts.associate { it.moduleVersion.id.name to it.moduleVersion.id.version }
+            val dependencyVersions = configurations["androidRuntimeClasspath"].resolvedConfiguration.resolvedArtifacts.associate { it.moduleVersion.id.name to it.moduleVersion.id.version }
             asNode().child("dependencies").children().filterIsInstance<Node>().forEach { dependencyNode ->
                 val isVersionMissing = (dependencyNode["version"] as NodeList).isEmpty()
                 if (isVersionMissing) {
