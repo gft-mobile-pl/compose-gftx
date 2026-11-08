@@ -15,6 +15,24 @@ import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.IntSize
 
+/**
+ * Clears focus when the user taps this element.
+ *
+ * Apply it to a screen's root container to hide the keyboard when the user taps outside a
+ * text field:
+ * ```
+ * Column(Modifier.fillMaxSize().clearFocusOnClick()) {
+ *     TextField(state = rememberTextFieldState())
+ * }
+ * ```
+ *
+ * * Calls [androidx.compose.ui.focus.FocusManager.clearFocus] on the current [LocalFocusManager].
+ * * Detects taps with [detectTapGestures]. Fires on pointer up, not on pointer down.
+ * * Ignores taps that a child already consumed (e.g. clickable children or text fields), so
+ *   tapping them keeps the current focus.
+ *
+ * @return this [Modifier] chained with the clear-focus tap handler
+ */
 fun Modifier.clearFocusOnClick() = this then ClearFocusOnClickElement
 
 private data object ClearFocusOnClickElement : ModifierNodeElement<ClearFocusOnClickNode>() {

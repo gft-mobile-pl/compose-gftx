@@ -16,15 +16,30 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 /**
- * Converts [StateFlow] to [State].
- * The [State.value] is updated:
- * - one time once the [State] is created,
- * - constantly when the state of the provided [lifecycle] is at least [minActiveState].
+ * Converts this [StateFlow] to a [State] that updates based on [lifecycle].
  *
- * This method is similar to [androidx.lifecycle.compose.collectAsStateWithLifecycle]
- * but it does not use [StateFlow.value] to obtain the initial value if current state
- * of the provided [lifecycle] is at least [minActiveState] as the state will be provided
- * anyway via collection.
+ * ```
+ * val uiState by dataFlow.map<UIState> { ... }.toState(minActiveState = Lifecycle.State.STARTED)
+ * ```
+ *
+ * Updates [State.value]:
+ * - once, when the [State] is created,
+ * - continuously, while [lifecycle] is at least [minActiveState].
+ *
+ * Similar to [androidx.lifecycle.compose.collectAsStateWithLifecycle], but skips reading
+ * [StateFlow.value] for the initial value when [lifecycle] is already at least
+ * [minActiveState], because collection provides that value anyway.
+ *
+ * Notes:
+ * - Stops collecting when [lifecycle] drops below [minActiveState] and restarts when it returns.
+ * - Stops collecting and removes the lifecycle observer when this call leaves the composition.
+ *
+ * @param minActiveState minimum [Lifecycle.State] in which to collect; must be at least
+ *   [Lifecycle.State.CREATED]
+ * @param lifecycle lifecycle that controls collection; defaults to the lifecycle of
+ *   [LocalLifecycleOwner]
+ * @return [State] holding the latest value of this [StateFlow]
+ * @throws IllegalArgumentException if [minActiveState] is [Lifecycle.State.INITIALIZED]
  */
 @Composable
 fun <T> StateFlow<T>.toState(
