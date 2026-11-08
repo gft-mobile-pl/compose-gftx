@@ -1,11 +1,11 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
-    namespace = "com.gft.compose"
-    compileSdk = 34
+    namespace = "com.gft.compose.example"
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.gft.compose"
@@ -30,14 +30,8 @@ android {
         sourceCompatibility = Java.sourceCompatibility
         targetCompatibility = Java.targetCompatibility
     }
-    kotlinOptions {
-        jvmTarget = Java.jvmTarget
-    }
     buildFeatures {
         compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = Compose.kotlinCompilerPlugin
     }
     packaging {
         resources {
