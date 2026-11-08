@@ -18,7 +18,7 @@ kotlin {
     }
     android {
         namespace = "com.gft.compose"
-        compileSdk = 35
+        compileSdk = 37
         minSdk = 26
         compilerOptions {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
@@ -31,7 +31,6 @@ kotlin {
             }
         }
     }
-    iosX64()
     iosArm64()
     iosSimulatorArm64()
 
