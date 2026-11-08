@@ -40,13 +40,13 @@ kotlin {
             dependencies {
                 implementation(libs.compose.ui)
                 implementation(libs.compose.foundation)
-                implementation(libs.androidx.lifecycle.runtime.compose)
-
+                implementation(libs.jetbrains.lifecycle.runtime.compose)
             }
         }
         val androidMain by getting {
             dependencies {
                 implementation(libs.androidx.activity.compose)
+                implementation(libs.androidx.lifecycle.runtime.compose)
             }
         }
     }
