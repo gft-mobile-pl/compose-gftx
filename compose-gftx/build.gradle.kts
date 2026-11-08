@@ -28,24 +28,21 @@ kotlin {
     iosSimulatorArm64()
 
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(libs.jetbrains.compose.ui)
-                implementation(libs.jetbrains.compose.foundation)
-                implementation(libs.jetbrains.lifecycle.runtime.compose)
-            }
-        }
-        val androidMain by getting {
-            dependencies {
-                implementation(libs.androidx.activity.compose)
-                implementation(libs.androidx.lifecycle.runtime.compose)
-            }
+        commonMain.dependencies {
+            implementation(libs.jetbrains.compose.ui)
+            implementation(libs.jetbrains.compose.foundation)
+            implementation(libs.jetbrains.lifecycle.runtime.compose)
+            implementation(libs.androidx.navigationevent.compose)
         }
     }
 }
 
 mavenPublishing {
-    coordinates(project.property("libraryGroupId") as String, "compose", project.property("libraryVersion") as String)
+    coordinates(
+        project.property("libraryGroupId") as String,
+        "compose",
+        project.property("libraryVersion") as String
+    )
 
     pom {
         name.set(project.property("libraryName") as String)
@@ -72,17 +69,22 @@ mavenPublishing {
 
         withXml {
             fun Node.child(name: String) =
-                children().first { it is Node && it.name().toString().substringAfterLast('}') == name } as Node
+                children().first {
+                    it is Node && it.name().toString().substringAfterLast('}') == name
+                } as Node
 
-            val dependencyVersions = configurations["androidRuntimeClasspath"].resolvedConfiguration.resolvedArtifacts.associate { it.moduleVersion.id.name to it.moduleVersion.id.version }
-            asNode().child("dependencies").children().filterIsInstance<Node>().forEach { dependencyNode ->
-                val isVersionMissing = (dependencyNode["version"] as NodeList).isEmpty()
-                if (isVersionMissing) {
-                    val artifactId = ((dependencyNode["artifactId"] as NodeList).first() as Node).text()
-                    val version = dependencyVersions["$artifactId-android"]
-                    dependencyNode.appendNode("version", version)
+            val dependencyVersions =
+                configurations["androidRuntimeClasspath"].resolvedConfiguration.resolvedArtifacts.associate { it.moduleVersion.id.name to it.moduleVersion.id.version }
+            asNode().child("dependencies").children().filterIsInstance<Node>()
+                .forEach { dependencyNode ->
+                    val isVersionMissing = (dependencyNode["version"] as NodeList).isEmpty()
+                    if (isVersionMissing) {
+                        val artifactId =
+                            ((dependencyNode["artifactId"] as NodeList).first() as Node).text()
+                        val version = dependencyVersions["$artifactId-android"]
+                        dependencyNode.appendNode("version", version)
+                    }
                 }
-            }
         }
     }
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
