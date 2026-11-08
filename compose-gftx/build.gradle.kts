@@ -5,9 +5,9 @@ import groovy.util.NodeList
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.maven.publish)
-    alias(libs.plugins.compose)
+    alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.android.kotlin.multiplatform.library)
-    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlin.compose)
 }
 
 kotlin {
@@ -30,8 +30,8 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(libs.compose.ui)
-                implementation(libs.compose.foundation)
+                implementation(libs.jetbrains.compose.ui)
+                implementation(libs.jetbrains.compose.foundation)
                 implementation(libs.jetbrains.lifecycle.runtime.compose)
             }
         }
