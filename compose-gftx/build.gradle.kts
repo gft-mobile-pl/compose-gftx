@@ -23,13 +23,6 @@ kotlin {
         compilerOptions {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
         }
-        androidResources { enable = true }
-        optimization {
-            consumerKeepRules.apply {
-                publish = true
-                file("consumer-rules.pro")
-            }
-        }
     }
     iosArm64()
     iosSimulatorArm64()
