@@ -2,7 +2,7 @@
 agp = "9.5.1"
 kotlin = "2.4.10"
 koin-bom = "4.2.2"
-mavenPublishVersion = "0.29.0"
+mavenPublishVersion = "0.37.0"
 
 # Google AndroidX (Android-only)
 androidx-core = "1.19.1"
@@ -12,7 +12,7 @@ androidx-activity = "1.13.0"
 androidx-navigation = "2.10.2"
 
 # AndroidX (Kotlin Multiplatform)
-androidx-navigationevent = "1.1.1"
+androidx-navigationevent = "1.2.0"
 
 # JetBrains (Kotlin Multiplatform)
 jetbrains-compose = "1.12.2"

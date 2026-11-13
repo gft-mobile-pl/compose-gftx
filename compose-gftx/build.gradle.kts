@@ -1,7 +1,3 @@
-import com.vanniktech.maven.publish.SonatypeHost
-import groovy.util.Node
-import groovy.util.NodeList
-
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.maven.publish)
@@ -66,27 +62,7 @@ mavenPublishing {
             connection.set("scm:git:git://${project.property("libraryRepositoryUrl") as String}")
             developerConnection.set("scm:git:ssh://git@${project.property("libraryRepositoryUrl") as String}.git")
         }
-
-        withXml {
-            fun Node.child(name: String) =
-                children().first {
-                    it is Node && it.name().toString().substringAfterLast('}') == name
-                } as Node
-
-            val dependencyVersions =
-                configurations["androidRuntimeClasspath"].resolvedConfiguration.resolvedArtifacts.associate { it.moduleVersion.id.name to it.moduleVersion.id.version }
-            asNode().child("dependencies").children().filterIsInstance<Node>()
-                .forEach { dependencyNode ->
-                    val isVersionMissing = (dependencyNode["version"] as NodeList).isEmpty()
-                    if (isVersionMissing) {
-                        val artifactId =
-                            ((dependencyNode["artifactId"] as NodeList).first() as Node).text()
-                        val version = dependencyVersions["$artifactId-android"]
-                        dependencyNode.appendNode("version", version)
-                    }
-                }
-        }
     }
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    publishToMavenCentral()
     signAllPublications()
 }
