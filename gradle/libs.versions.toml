@@ -4,10 +4,14 @@ kotlin = "2.4.10"
 koin-bom = "4.2.2"
 mavenPublishVersion = "0.37.0"
 
+# Android SDK
+android-compileSdk = "37"
+android-minSdk = "26"
+android-targetSdk = "37"
+
 # Google AndroidX (Android-only)
 androidx-core = "1.19.1"
 androidx-compose-bom = "2026.09.00"
-androidx-lifecycle = "2.11.0"
 androidx-activity = "1.13.0"
 androidx-navigation = "2.10.2"
 
