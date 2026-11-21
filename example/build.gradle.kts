@@ -13,7 +13,11 @@ kotlin {
 
 android {
     namespace = "com.gft.compose.example"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    compileSdk {
+        version = release(libs.versions.android.compileSdk.get().toInt()) {
+            minorApiLevel = libs.versions.android.compileSdkMinor.get().toInt()
+        }
+    }
 
     defaultConfig {
         applicationId = "com.gft.compose.example"
@@ -31,16 +35,22 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
         }
     }
+
     compileOptions {
         sourceCompatibility = Java.sourceCompatibility
         targetCompatibility = Java.targetCompatibility
     }
+
     buildFeatures {
         compose = true
     }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -51,21 +61,21 @@ android {
 dependencies {
     implementation(project(":compose-gftx"))
 
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.core.ktx)
+    implementation(libs.jetbrains.compose.foundation)
+    implementation(libs.jetbrains.compose.ui)
+    implementation(libs.jetbrains.compose.ui.graphics)
+    implementation(libs.jetbrains.compose.ui.tooling.preview)
+    implementation(libs.jetbrains.compose.material3)
+    implementation(libs.jetbrains.navigation.compose)
+
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.core)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.material3)
 
     implementation(platform(libs.koin.bom))
-    implementation(libs.koin.core)
-    implementation(libs.koin.android.compose)
     implementation(libs.koin.android)
+    implementation(libs.koin.android.compose)
+    implementation(libs.koin.core)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }

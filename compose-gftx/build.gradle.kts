@@ -16,21 +16,27 @@ kotlin {
 
     android {
         namespace = "com.gft.compose"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        compileSdk {
+            version = release(libs.versions.android.compileSdk.get().toInt()) {
+                minorApiLevel = libs.versions.android.compileSdkMinor.get().toInt()
+            }
+        }
         minSdk = libs.versions.android.minSdk.get().toInt()
 
         compilerOptions {
             jvmTarget = JvmTarget.fromTarget(Java.jvmTarget)
         }
     }
+
     iosArm64()
     iosSimulatorArm64()
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.jetbrains.compose.ui)
             implementation(libs.jetbrains.compose.foundation)
-            implementation(libs.jetbrains.lifecycle.runtime.compose)
+            implementation(libs.jetbrains.compose.ui)
+
+            implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.androidx.navigationevent.compose)
         }
     }
